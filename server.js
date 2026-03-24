@@ -11,17 +11,20 @@ connectDB();
 
 const app = express();
 
+const fs = require('fs');
 app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
-// Main Route Check
-app.get('/', (req, res) => {
-    res.send('API is running...');
-});
+// Ensure uploads directory exists for remote hosting (Replit/Railway)
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)){
+    fs.mkdirSync(uploadsDir);
+}
 
 // Serving static files (images)
-app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+app.get('/', (req, res) => res.send('API is running...'));
+app.use('/uploads', express.static(uploadsDir));
 
 // Routes
 app.use('/api/users', require('./routes/userRoutes'));
